@@ -32,11 +32,22 @@ export const Provider = ({ children }) => {
   useEffect(() => {
     if (!checkedToken) return;
 
+    // Public routes that don't require authentication
+    const publicRoutes = ["/login", "/register", "/forgot-password"];
+    
+    // If not logged in and trying to access protected route
+    if (!isLoggedIn && !publicRoutes.includes(pathname)) {
+      router.push("/login");
+      return;
+    }
+
+    // If logged in and on login page, redirect to home
     if (isLoggedIn && pathname === "/login") {
       router.push("/");
       return;
     }
 
+    // Admin route protection
     const adminRoutes = ["/admin", "/admin/users", "/admin/settings"];
     if (adminRoutes.includes(pathname) && userRole !== "admin") {
       router.push("/access-denied");
